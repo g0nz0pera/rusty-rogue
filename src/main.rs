@@ -4,7 +4,6 @@
 
 // START: prelude
 mod map;
-mod player;
 mod map_builder;
 mod camera;
 
@@ -33,7 +32,6 @@ use crate::prelude::*;
 
 struct State{
     map: Map,
-    player: Player,
     camera: Camera
 
 }
@@ -44,7 +42,6 @@ impl State {
         let map_builder = MapBuilder::new(&mut rng);
         Self {
             map: map_builder.map,
-            player: Player::new(map_builder.player_start),
             camera: Camera::new(map_builder.player_start)
         }
     }
@@ -56,9 +53,7 @@ impl GameState for State {
         ctx.cls();
         ctx.set_active_console(1);
         ctx.cls();
-        self.player.update(ctx, &self.map, &mut self.camera);
         self.map.render(ctx, &self.camera);
-        self.player.render(ctx, &self.camera);
     }
 
 }
