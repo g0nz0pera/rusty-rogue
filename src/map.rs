@@ -1,6 +1,7 @@
 // START: header
-use crate::NUM_TILES;
 use crate::prelude::*;
+const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT ) as usize;
+
 // END: header
 
 /*We marked TileType as public,
@@ -32,18 +33,37 @@ impl Map {
         }
     }
 
-
-    pub fn render(&self, ctx: &mut BTerm ){
-        for y in 0..SCREEN_HEIGHT {
-            for x in 0..SCREEN_WIDTH {
-                let idx = map_idx(x,y);
-
-                match self.tiles[idx] {
-                    TileType::Floor => {
-                        ctx.set(x,y,YELLOW, BLACK, to_cp437('.'))
-                    },
-                    TileType::Wall => {
-                        ctx.set(x,y,GREEN, BLACK, to_cp437('#'))
+    /*
+    The function receives a borrowed Camera and uses the boundaries from the camera to render only the visible part of the map.
+    Notice that it now calls in_bounds to ensure that each tile exists.
+    The screen coordinates sent to the set function have left_x and top_y subtracted from them, moving them to be relative to the camera.
+    Notice that it calls set_active_console(0).
+     */
+    pub fn render(&self, ctx: &mut BTerm, camera: &Camera ){
+        ctx.set_active_console(0);
+        for y in camera.top_y .. camera.bottom_y {
+            for x in camera.left_x .. camera.right_x {
+                if self.in_bounds(Point::new(x,y)) {
+                    let idx = map_idx(x,y);
+                    match self.tiles[idx] {
+                        TileType::Floor => {
+                            ctx.set(
+                                x - camera.left_x,
+                                y - camera.top_y,
+                                WHITE,
+                                BLACK,
+                                to_cp437('.')
+                            );
+                        }
+                        TileType::Wall => {
+                            ctx.set(
+                                x - camera.left_x,
+                                y - camera.top_y,
+                                WHITE,
+                                BLACK,
+                                to_cp437('#')
+                            );
+                        }
                     }
                 }
             }
@@ -55,8 +75,7 @@ impl Map {
     than 0 on both the x and y axes and that it’s less than the screen height and width.
      */
     pub fn in_bounds(&self, point : Point ) -> bool {
-        point.x >= 0 && point.x < SCREEN_WIDTH
-            && point.y >= 0 && point.y < SCREEN_HEIGHT
+        point.x >= 0 && point.x < SCREEN_WIDTH && point.y >= 0 && point.y < SCREEN_HEIGHT
     }
 
     /*
@@ -66,8 +85,7 @@ impl Map {
         If both are true, the adventurer may enter the tile.
      */
     pub fn can_enter_tile(&self, point: Point) -> bool {
-        self.in_bounds(point) &&
-            self.tiles[map_idx(point.x, point.y)] == TileType::Floor
+        self.in_bounds(point) && self.tiles[map_idx(point.x, point.y)] == TileType::Floor
     }
 
     /*

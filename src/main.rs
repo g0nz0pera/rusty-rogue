@@ -6,6 +6,7 @@
 mod map;
 mod player;
 mod map_builder;
+mod camera;
 
 mod prelude {
     pub use bracket_lib::prelude::*;
@@ -14,11 +15,11 @@ mod prelude {
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH /2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT /2;
 
-    pub const DUNGEON_FONT: &str = "dungeonfont.png";
-
     pub use crate::map::*;
     pub use crate::player::*;
     pub use crate::map_builder::*;
+    pub use crate::camera::*;
+
 }
 
 use crate::prelude::*;
@@ -26,11 +27,12 @@ use crate::prelude::*;
 
 
 //Rust commonly uses usize to index collections and arrays.
-const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT ) as usize;
 
 struct State{
     map: Map,
     player: Player,
+    camera: Camera
+
 }
 
 impl State {
@@ -38,25 +40,28 @@ impl State {
         let mut rng = RandomNumberGenerator::new();
         let map_builder = MapBuilder::new(&mut rng);
         Self {
-            map: Map::new(),
-            player: Player::new(
-                map_builder.player_start,
-            )
+            map: map_builder.map,
+            player: Player::new(map_builder.player_start),
+            camera: Camera::new(map_builder.player_start)
         }
     }
 }
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
+        ctx.set_active_console(0);
         ctx.cls();
-        self.player.update(ctx, &self.map);
-        self.map.render(ctx);
-        self.player.render(ctx);
+        ctx.set_active_console(1);
+        ctx.cls();
+        self.player.update(ctx, &self.map, &mut self.camera);
+        self.map.render(ctx, &self.camera);
+        self.player.render(ctx, &self.camera);
     }
+
 }
 
 fn main() -> BError {
-    let context = BTermBuilder::simple80x50()
+    let context = BTermBuilder::new()
         .with_title("Dungeon Crawler")
         .with_fps_cap(30.0)
         //This uses with_dimensions to specify the size of subsequent consoles we add.
@@ -66,12 +71,14 @@ fn main() -> BError {
         //This specifies the directory in which we placed the graphics file.
         .with_resource_path("resources/")
         //This is the name of the font file to load and the character dimensions. These are usually the same as tile dimensions but can be different in some advanced forms of rendering.
-        .with_font(DUNGEON_FONT, 32, 32)
+        .with_font("dungeonfont.png", 32, 32)
         //This adds a console using the dimensions already specified and the named tile graphics file.
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, DUNGEON_FONT)
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
         // This adds a second console, with no background so that transparency shows through it.
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, DUNGEON_FONT)
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
         .build()?;
 
     main_loop(context, State::new())
+
+
 }
