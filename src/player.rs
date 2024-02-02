@@ -32,11 +32,11 @@ impl Player {
                 VirtualKeyCode::Down => Point::new(0,1),
                 _ => Point::zero()
             };
-        }
 
-        let new_position = self.position + delta;
-        if map.can_enter_tile(new_position){
-            self.position = new_position;
+            let new_position = self.position + delta;
+            if map.can_enter_tile(new_position){
+                self.position = new_position;
+            }
         }
     }
 }
