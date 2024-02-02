@@ -9,6 +9,7 @@ mod camera;
 mod components;
 mod spawner;
 mod systems;
+mod turn_state;
 
 mod prelude {
     pub use bracket_lib::prelude::*;
@@ -22,15 +23,17 @@ mod prelude {
     pub use crate::components::*;
     pub use crate::spawner::*;
     pub use crate::systems::*;
+    pub use crate::map::*;
+    pub use crate::map_builder::*;
+    pub use crate::camera::*;
+    pub use crate::turn_state::*;
 
     pub const SCREEN_WIDTH: i32 = 80;
     pub const SCREEN_HEIGHT: i32 = 50;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH /2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT /2;
 
-    pub use crate::map::*;
-    pub use crate::map_builder::*;
-    pub use crate::camera::*;
+
 
 }
 
@@ -76,6 +79,7 @@ impl State {
 
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
+        resources.insert(TurnState:: AwaitingInput);
         Self {
             ecs,
             resources,
