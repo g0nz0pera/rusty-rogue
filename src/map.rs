@@ -49,4 +49,36 @@ impl Map {
             }
         }
     }
+
+    /*
+    This function checks that the location specified in point is greater
+    than 0 on both the x and y axes and that it’s less than the screen height and width.
+     */
+    pub fn in_bounds(&self, point : Point ) -> bool {
+        point.x >= 0 && point.x < SCREEN_WIDTH
+            && point.y >= 0 && point.y < SCREEN_HEIGHT
+    }
+
+    /*
+        We need a second function to determine if the player can enter a tile.
+        Players can walk on floors, but not through walls. This function should call the in_bounds
+        function we just wrote, to ensure that the move is valid both dimensionally and for the TileType.
+        If both are true, the adventurer may enter the tile.
+     */
+    pub fn can_enter_tile(&self, point: Point) -> bool {
+        self.in_bounds(point) &&
+            self.tiles[map_idx(point.x, point.y)] == TileType::Floor
+    }
+
+    /*
+    It’d be useful to have a way to determine a tile’s index coordinates,
+    failing if the requested coordinates fall outside of the map boundaries.
+     */
+    pub fn try_idx(&self, point: Point) -> Option<usize> {
+        if !self.in_bounds(point){
+            None
+        } else {
+            Some(map_idx(point.x, point.y))
+        }
+    }
 }
