@@ -14,6 +14,10 @@ mod prelude {
     pub use bracket_lib::prelude::*;
     pub use legion::*;
     pub use legion::world::SubWorld;
+    //  Legion can give our system a CommandBuffer.
+    //  This is a special container into which we can insert instructions for Legion
+    //  to perform after the system is finished.
+    // We’ll use the command buffer to remove entities from the game.
     pub use legion::systems::CommandBuffer;
     pub use crate::components::*;
     pub use crate::spawner::*;
