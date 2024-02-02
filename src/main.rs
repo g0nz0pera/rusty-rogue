@@ -25,7 +25,6 @@ mod prelude {
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT /2;
 
     pub use crate::map::*;
-    pub use crate::player::*;
     pub use crate::map_builder::*;
     pub use crate::camera::*;
 
@@ -74,6 +73,7 @@ impl GameState for State {
         //This makes the current keyboard state available to any system that requests it.
         self.resources.insert(ctx.key);
         self.systems.execute(&mut self.ecs, &mut self.resources);
+        render_draw_buffer(ctx).expect("Render Error");
     }
 
 }
