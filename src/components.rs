@@ -8,5 +8,14 @@ pub struct Render {
     pub glyph: FontCharType,
 }
 
+/*
+Hero Tag Component
+ */
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Player;
+
+/*
+Enemy tag component.
+ */
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Enemy;

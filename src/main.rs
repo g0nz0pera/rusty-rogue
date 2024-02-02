@@ -53,6 +53,23 @@ impl State {
         // it’s injected into the world’s resources with insert().
         let map_builder = MapBuilder::new(&mut rng);
         spawn_player(&mut ecs, map_builder.player_start);
+
+        // Spawn one Monster per room, except in the first room with the player, where none will spawn.
+        // The Rect structure we used to place rooms includes a center() function.
+        // We can combine this with a bit of iterator magic to efficiently place a random monster in each room
+        map_builder.rooms
+            .iter()
+            .skip(1)
+            // This transforms each entry from a room to the result of center() (a Point) using map().
+            // Mapping an iterator passes each entry into a closure, returning a different type of result.
+            // We can use map() to transform one type of iterator into another.
+            // After this call, we iterate a list of Point data representing the center of each room.
+            .map(|r| r.center())
+            // This calls for_each to run a closure on each location.
+            // The closure receives the point as pos and calls our spawn_monster() function with the location.
+            .for_each(|pos| spawn_monster(&mut ecs, &mut rng, pos));
+
+
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
         Self {
