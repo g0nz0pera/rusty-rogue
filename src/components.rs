@@ -19,3 +19,7 @@ Enemy tag component.
  */
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Enemy;
+
+//anything that has the component will wander aimlessly around the map
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MovingRandomly;
