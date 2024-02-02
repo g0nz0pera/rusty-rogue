@@ -7,6 +7,9 @@ pub struct Camera {
     pub bottom_y: i32,
 }
 
+/*
+The Camera also becomes a resource.
+ */
 impl Camera {
     /*
     The new and on_player_move functions are essentially the same:

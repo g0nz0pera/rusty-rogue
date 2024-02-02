@@ -24,6 +24,7 @@ mod prelude {
 
 }
 
+use std::task::Poll::Ready;
 use crate::prelude::*;
 // END: prelude
 
@@ -31,18 +32,27 @@ use crate::prelude::*;
 //Rust commonly uses usize to index collections and arrays.
 
 struct State{
-    map: Map,
-    camera: Camera
+    ecs: World,
+    resources: Resources,
+    systems: Schedule,
 
 }
 
 impl State {
     fn new() -> Self {
+        let mut ecs = World::default();
+        let mut resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
+        //The map builder is set up in the same way we did before, but rather than storing it in State,
+        // it’s injected into the world’s resources with insert().
         let map_builder = MapBuilder::new(&mut rng);
+        spawn_player(&mut ecs, map_builder.player_start);
+        resources.insert(map_builder.map);
+        resources.insert(Camera::new(map_builder.player_start));
         Self {
-            map: map_builder.map,
-            camera: Camera::new(map_builder.player_start)
+            ecs,
+            resources,
+            systems: build_scheduler()
         }
     }
 }

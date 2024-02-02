@@ -14,6 +14,12 @@ pub enum TileType {
     Floor,
 }
 
+/*
+The map is no longer part of our game state.
+Instead, it’s now a resource—a shared piece of data that’s available to all systems that need it.
+Map creation remains the same, but instead of storing it in the State,
+it’s inserted into Legion’s resource list, which we also have to initialize.
+ */
 pub struct Map {
     pub tiles: Vec<TileType>,
 }
