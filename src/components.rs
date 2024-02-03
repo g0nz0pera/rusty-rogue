@@ -23,3 +23,9 @@ pub struct Enemy;
 //anything that has the component will wander aimlessly around the map
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MovingRandomly;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantsToMove {
+    pub entity: Entity,
+    pub destination : Point,
+}
